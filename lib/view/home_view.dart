@@ -11,10 +11,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.yellowAccent,
       body: SafeArea(
-        child: Center(
-          child: Text("Promodoro Clock"),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Container(
+                color: const Color(0xFF264444),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Container(
+                child: Column(
+                  children: [
+                    
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
