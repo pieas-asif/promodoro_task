@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -35,6 +36,61 @@ class _HomeScreenState extends State<HomeScreen> {
               flex: 2,
               child: Container(
                 color: const Color(0xFF264444),
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(50.0),
+                        child: RotatedBox(
+                          quarterTurns: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: const [
+                              AutoSizeText(
+                                "25:00",
+                                style: TextStyle(
+                                  fontSize: 96.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                // maxFontSize: 74.0,
+                                minFontSize: 24.0,
+                                maxLines: 1,
+                              ),
+                              AutoSizeText(
+                                "- Work Hard",
+                                style: TextStyle(
+                                  fontSize: 24.0,
+                                  // fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                // maxFontSize: 74.0,
+                                minFontSize: 12.0,
+                                maxLines: 1,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    MaterialButton(
+                      onPressed: () {},
+                      child: const Text(
+                        "Start",
+                        style: TextStyle(
+                          // fontWeight: FontWeight.bold,
+                          color: Color(0xFF264444),
+                        ),
+                      ),
+                      color: Colors.white,
+                      height: 45,
+                      minWidth: double.infinity,
+                    )
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -62,14 +118,28 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    TextField(
-                      controller: _todoTextController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.send),
+                    SizedBox(
+                      height: 40,
+                      child: TextField(
+                        controller: _todoTextController,
+                        decoration: InputDecoration(
+                          labelText: "Add a new todo",
+                          isDense: true,
+                          border: const OutlineInputBorder(),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              todos.add(_todoTextController.value.text);
+                              _todoTextController.clear();
+                              setState(() {});
+                            },
+                            icon: const Icon(Icons.send),
+                          ),
                         ),
+                        onSubmitted: (value) {
+                          todos.add(value);
+                          _todoTextController.clear();
+                          setState(() {});
+                        },
                       ),
                     )
                   ],
