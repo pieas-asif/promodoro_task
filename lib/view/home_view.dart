@@ -1,7 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:promodoro_task/model/todo.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,11 +13,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _todoTextController = TextEditingController();
-  List<String> todos = [
-    "Do a task",
-    "Make it clickable",
-    "Make it editable",
-  ];
+
+  void insertIntoDatabase(String task) async {
+    Todo todo = Todo()..task = task;
+    Box<Todo> box = Hive.box<Todo>("todos");
+    box.add(todo);
+  }
 
   @override
   void dispose() {
@@ -61,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 maxLines: 1,
                               ),
                               AutoSizeText(
-                                "- Work Hard",
+                                " Work Hard",
                                 style: TextStyle(
                                   fontSize: 24.0,
                                   // fontWeight: FontWeight.bold,
@@ -111,11 +113,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (String todo in todos) Text(todo),
-                        ],
+                      child: ValueListenableBuilder<Box<Todo>>(
+                        valueListenable: Hive.box<Todo>("todos").listenable(),
+                        builder: (context, box, _) {
+                          List<Todo> todos = box.values.toList().cast<Todo>();
+                          return todoListView(todos);
+                        },
                       ),
                     ),
                     SizedBox(
@@ -128,17 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           border: const OutlineInputBorder(),
                           suffixIcon: IconButton(
                             onPressed: () {
-                              todos.add(_todoTextController.value.text);
+                              insertIntoDatabase(
+                                  _todoTextController.value.text);
                               _todoTextController.clear();
-                              setState(() {});
                             },
                             icon: const Icon(Icons.send),
                           ),
                         ),
                         onSubmitted: (value) {
-                          todos.add(value);
+                          insertIntoDatabase(value);
                           _todoTextController.clear();
-                          setState(() {});
                         },
                       ),
                     )
@@ -149,6 +151,28 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget todoListView(List<Todo> todos) {
+    return ListView.builder(
+      itemCount: todos.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: todos[index].done
+              ? const Icon(FeatherIcons.checkCircle)
+              : const Icon(FeatherIcons.circle),
+          title: Text(
+            todos[index].task,
+            style: TextStyle(
+              decoration: todos[index].done
+                  ? TextDecoration.lineThrough
+                  : TextDecoration.none,
+            ),
+          ),
+          trailing: const Icon(FeatherIcons.moreVertical),
+        );
+      },
     );
   }
 }
