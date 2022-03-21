@@ -15,10 +15,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _todoTextController = TextEditingController();
 
-  void insertIntoDatabase(String task) async {
+  void insertIntoDatabase(String task) {
     Todo todo = Todo()..task = task;
     Box<Todo> box = Hive.box<Todo>("todos");
     box.add(todo);
+  }
+
+  void updateTask(Todo todo) {
+    todo.done = !todo.done;
+    todo.save();
   }
 
   @override
@@ -187,7 +192,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   : TextDecoration.none,
             ),
           ),
-          trailing: const Icon(FeatherIcons.moreVertical),
+          onTap: () =>
+            updateTask(todos[index]),
+          
         );
       },
     );
