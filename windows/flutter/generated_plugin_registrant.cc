@@ -6,9 +6,9 @@
 
 #include "generated_plugin_registrant.h"
 
-#include <desktop_window/desktop_window_plugin.h>
+#include <bitsdojo_window_windows/bitsdojo_window_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
-  DesktopWindowPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("DesktopWindowPlugin"));
+  BitsdojoWindowPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("BitsdojoWindowPlugin"));
 }
