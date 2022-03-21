@@ -198,7 +198,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   : TextDecoration.none,
             ),
           ),
-          trailing: const Icon(FeatherIcons.moreVertical),
+          trailing: PopupMenuButton(
+            icon: const Icon(FeatherIcons.moreVertical),
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              const PopupMenuItem(
+                child: ListTile(
+                  leading: Icon(FeatherIcons.delete),
+                  title: Text('Delete'),
+                ),
+              ),
+            ],
+          ),
           onTap: () => updateTask(todos[index]),
         );
       },
