@@ -26,6 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
     todo.save();
   }
 
+  void deleteTask(Todo todo) {
+    todo.delete();
+  }
+
   @override
   void dispose() {
     Hive.close();
@@ -201,10 +205,14 @@ class _HomeScreenState extends State<HomeScreen> {
           trailing: PopupMenuButton(
             icon: const Icon(FeatherIcons.moreVertical),
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              const PopupMenuItem(
+              PopupMenuItem(
                 child: ListTile(
-                  leading: Icon(FeatherIcons.delete),
-                  title: Text('Delete'),
+                  leading: const Icon(FeatherIcons.delete),
+                  title: const Text('Delete'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    deleteTask(todos[index]);
+                  },
                 ),
               ),
             ],
