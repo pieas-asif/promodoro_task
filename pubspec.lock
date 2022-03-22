@@ -249,6 +249,11 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -291,6 +296,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.13.4"
   http_multi_server:
     dependency: transitive
     description:
@@ -318,7 +330,7 @@ packages:
       name: js
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.4"
+    version: "0.6.3"
   json_annotation:
     dependency: transitive
     description:
@@ -492,6 +504,34 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  soundpool:
+    dependency: "direct main"
+    description:
+      name: soundpool
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.0"
+  soundpool_macos:
+    dependency: transitive
+    description:
+      name: soundpool_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
+  soundpool_platform_interface:
+    dependency: transitive
+    description:
+      name: soundpool_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
+  soundpool_web:
+    dependency: transitive
+    description:
+      name: soundpool_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
   source_gen:
     dependency: transitive
     description:

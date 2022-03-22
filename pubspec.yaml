@@ -34,6 +34,7 @@ dependencies:
   hive_flutter: ^1.1.0
   auto_size_text: ^3.0.0
   feather_icons: ^1.2.0
+  soundpool: ^2.3.0
 
 
 dev_dependencies:
