@@ -2,8 +2,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:promodoro_task/model/todo.dart';
+import 'package:soundpool/soundpool.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -14,6 +16,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _todoTextController = TextEditingController();
+  final Soundpool _soundpool = Soundpool.fromOptions();
+  int? soundId;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSoundId();
+  }
+
+  fetchSoundId() async {
+    int id = await rootBundle
+        .load("assets/sounds/beep.m4a")
+        .then((ByteData soundData) {
+      return _soundpool.load(soundData);
+    });
+    setState(() => soundId = id);
+  }
 
   void insertIntoDatabase(String task) async {
     Todo todo = Todo()..task = task;
@@ -34,6 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     Hive.close();
     _todoTextController.dispose();
+    _soundpool.dispose();
+    soundId = null;
     super.dispose();
   }
 
@@ -43,6 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Timer Side
+          // TODO: 1: Play Sound
+          // TODO: 2: Clock Decrease Time
           Expanded(
             flex: 2,
             child: Container(
@@ -100,7 +124,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      if (soundId != null) await _soundpool.play(soundId!);
+                    },
                     child: const Text(
                       "Start",
                       style: TextStyle(
@@ -116,6 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          // Todo Side
           Expanded(
             flex: 3,
             child: Padding(
