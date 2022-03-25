@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:feather_icons/feather_icons.dart';
@@ -17,12 +19,56 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _todoTextController = TextEditingController();
   final Soundpool _soundpool = Soundpool.fromOptions();
+  Timer? _timer;
   int? soundId;
+  int? alarmTimer;
+  late int timerStage;
+  String displayTimer = "25:00";
 
   @override
   void initState() {
     super.initState();
+    timerStage = 1;
+    setAlarmTimer();
     fetchSoundId();
+  }
+
+  setAlarmTimer() {
+    setState(() {
+      switch (timerStage) {
+        case 1:
+          alarmTimer = 25 * 60;
+          break;
+        case 2:
+          alarmTimer = 5 * 60;
+          break;
+        case 3:
+          alarmTimer = 15 * 60;
+          break;
+        default:
+          alarmTimer = 5;
+      }
+    });
+  }
+
+  handleButtonPress() {
+    timerStage++;
+    if (timerStage > 3) timerStage = 1;
+    setState(() {});
+    startTimer();
+  }
+
+  startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      alarmTimer = alarmTimer! - 1;
+      int temp = alarmTimer! % 60;
+      String minute = (alarmTimer! ~/ 60).toString();
+      String second = temp.toString();
+      setState(() {
+        displayTimer =
+            "${minute.length < 2 ? "0" : ""}$minute:${second.length < 2 ? "0" : ""}$second";
+      });
+    });
   }
 
   fetchSoundId() async {
@@ -54,6 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Hive.close();
     _todoTextController.dispose();
     _soundpool.dispose();
+    _timer?.cancel();
     soundId = null;
     super.dispose();
   }
@@ -95,10 +142,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.max,
-                          children: const [
+                          children: [
                             AutoSizeText(
-                              "25:00",
-                              style: TextStyle(
+                              "$displayTimer $timerStage",
+                              style: const TextStyle(
                                 fontSize: 96.0,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -107,9 +154,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               minFontSize: 24.0,
                               maxLines: 1,
                             ),
-                            AutoSizeText(
+                            const AutoSizeText(
                               " Work Hard",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 24.0,
                                 // fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -126,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialButton(
                     onPressed: () async {
                       if (soundId != null) await _soundpool.play(soundId!);
+                      handleButtonPress();
                     },
                     child: const Text(
                       "Start",
