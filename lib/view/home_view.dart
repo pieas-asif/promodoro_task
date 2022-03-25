@@ -6,6 +6,7 @@ import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:promodoro_task/model/constants.dart';
 import 'package:promodoro_task/model/todo.dart';
 import 'package:soundpool/soundpool.dart';
 
@@ -22,12 +23,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _timer;
   int? soundId;
   int? alarmTimer;
+  late int iterator;
   late int timerStage;
-  String displayTimer = "25:00";
+  late String displayTimer;
+  late String displayMessage;
+  late Color timerColor;
+  bool startButton = true;
 
   @override
   void initState() {
     super.initState();
+    iterator = 1;
     timerStage = 1;
     setAlarmTimer();
     fetchSoundId();
@@ -38,12 +44,21 @@ class _HomeScreenState extends State<HomeScreen> {
       switch (timerStage) {
         case 1:
           alarmTimer = 25 * 60;
+          displayTimer = "25:00";
+          displayMessage = "Work hard";
+          timerColor = PresetColors.primaryWork;
           break;
         case 2:
           alarmTimer = 5 * 60;
+          displayTimer = "05:00";
+          displayMessage = "Take a break";
+          timerColor = PresetColors.primaryShortBreak;
           break;
         case 3:
-          alarmTimer = 15 * 60;
+          alarmTimer = 10 * 60;
+          displayTimer = "15:00";
+          displayMessage = "Take a walk or exercise";
+          timerColor = PresetColors.primaryLongBreak;
           break;
         default:
           alarmTimer = 5;
@@ -52,22 +67,48 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   handleButtonPress() {
-    timerStage++;
-    if (timerStage > 3) timerStage = 1;
-    setState(() {});
-    startTimer();
+    if (startButton) {
+      iterator++;
+      if (iterator > 5) {
+        timerStage = 3;
+        iterator = 0;
+      } else {
+        if (iterator % 2 == 0) {
+          timerStage = 2;
+        } else {
+          timerStage = 1;
+        }
+      }
+      startButton = false;
+      setState(() {});
+      startTimer();
+    } else {
+      if (_timer != null) {
+        _timer?.cancel();
+        startButton = true;
+        setState(() {});
+      }
+    }
   }
 
   startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) async {
       alarmTimer = alarmTimer! - 1;
       int temp = alarmTimer! % 60;
       String minute = (alarmTimer! ~/ 60).toString();
       String second = temp.toString();
+
       setState(() {
         displayTimer =
             "${minute.length < 2 ? "0" : ""}$minute:${second.length < 2 ? "0" : ""}$second";
       });
+      if (alarmTimer == 0) {
+        if (soundId != null) await _soundpool.play(soundId!);
+        _timer?.cancel();
+        startButton = true;
+        setAlarmTimer();
+        setState(() {});
+      }
     });
   }
 
@@ -108,17 +149,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: PresetColors.background,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Timer Side
-          // TODO: 1: Play Sound
-          // TODO: 2: Clock Decrease Time
           Expanded(
             flex: 2,
-            child: Container(
-              color: const Color(0xFF264444),
+            child: AnimatedContainer(
+              color: timerColor,
               padding: const EdgeInsets.all(20.0),
+              duration: const Duration(milliseconds: 500),
               child: Column(
                 children: [
                   WindowTitleBarBox(
@@ -144,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             AutoSizeText(
-                              "$displayTimer $timerStage",
+                              displayTimer,
                               style: const TextStyle(
                                 fontSize: 96.0,
                                 fontWeight: FontWeight.bold,
@@ -154,8 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               minFontSize: 24.0,
                               maxLines: 1,
                             ),
-                            const AutoSizeText(
-                              " Work Hard",
+                            AutoSizeText(
+                              " $displayMessage",
                               style: const TextStyle(
                                 fontSize: 24.0,
                                 // fontWeight: FontWeight.bold,
@@ -171,10 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   MaterialButton(
-                    onPressed: () async {
-                      if (soundId != null) await _soundpool.play(soundId!);
-                      handleButtonPress();
-                    },
+                    onPressed: handleButtonPress,
                     child: const Text(
                       "Start",
                       style: TextStyle(

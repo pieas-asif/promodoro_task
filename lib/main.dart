@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Promodoro Task',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.pink,
       ),
       home: const HomeScreen(),
     );
